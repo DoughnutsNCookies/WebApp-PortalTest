@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="q-gutter-md">
-      <h1>Signup</h1>
+      <h1>Sign Up</h1>
       <q-form @submit="login">
         <div class="q-gutter-md">
           <q-input
@@ -54,7 +54,7 @@
 
           // Handle the response from the server
           console.log('Response:', response.data);
-        } catch (error:any) {
+        } catch (error) {
           // Handle errors here
           console.error('Error:', error.message);
         }
