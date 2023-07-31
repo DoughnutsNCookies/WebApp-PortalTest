@@ -8,7 +8,7 @@
   </q-layout>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent, ref } from 'vue'
 export default defineComponent({
   name: 'LoginLayout',

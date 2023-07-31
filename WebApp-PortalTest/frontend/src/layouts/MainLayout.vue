@@ -7,13 +7,13 @@
           icon="map"
           to="/"
           replace
-          label="One Tab"
+          label="Dashboard"
         />
         <q-route-tab
           icon="assignment"
           to="/profile"
           replace
-          label="Other Tab"
+          label="Profile"
         />
       </q-tabs>
     </q-footer>
@@ -25,7 +25,7 @@
   </q-layout>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent} from 'vue'
 export default defineComponent({
   name: 'MainLayout',

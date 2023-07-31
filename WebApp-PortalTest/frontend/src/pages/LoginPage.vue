@@ -26,9 +26,9 @@
   </q-page>
 </template>
 
-<script lang="ts">
+<script>
   import axios from 'axios'
-import { defineComponent, ref  } from 'vue'
+  import { defineComponent, ref  } from 'vue'
   import { useRouter } from 'vue-router'
   export default defineComponent({
     name: 'LoginPage',
@@ -39,7 +39,7 @@ import { defineComponent, ref  } from 'vue'
 
       const login = async () => {
         try {
-          const url = 'http://localhost:3030/users'; // Replace with your API endpoint
+          const url = 'http://localhost:3030/authentication'; // Replace with your API endpoint
           const dataToSend = {
             email: email.value,
           	password: password.value
@@ -47,6 +47,10 @@ import { defineComponent, ref  } from 'vue'
 
           const response = await axios.post(url, dataToSend);
 
+          if (response.status === 200) {
+            router.push('/');
+            console.log('Success:', response.data);
+          }
           // Handle the response from the server
           console.log('Response:', response.data);
         } catch (error:any) {

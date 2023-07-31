@@ -26,10 +26,11 @@
   </q-page>
 </template>
 
-<script lang="ts">
+<script>
   import axios from 'axios'
-import { defineComponent, ref  } from 'vue'
+  import { defineComponent, ref  } from 'vue'
   import { useRouter } from 'vue-router'
+  
   export default defineComponent({
     name: 'SignupPage',
     setup(){
@@ -46,6 +47,10 @@ import { defineComponent, ref  } from 'vue'
           };
 
           const response = await axios.post(url, dataToSend);
+          if (response.status === 200) {
+            router.push('/login');
+            console.log('Success:', response.data);
+          }
 
           // Handle the response from the server
           console.log('Response:', response.data);
