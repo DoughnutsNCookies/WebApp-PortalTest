@@ -27,7 +27,7 @@ const routes = [
     ],
   },
   {
-    path: "/update-member",
+    path: "/member/:id",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       { path: "", component: () => import("pages/UpdateMemberPage.vue") },

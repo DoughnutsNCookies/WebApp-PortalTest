@@ -8,7 +8,7 @@
           :key="index"
         >
           <q-item clickable v-ripple
-            to="/update-member"
+            :to="'/member/' + index"
           >
             <q-item-section>
               <q-item-label overline>OVERLINE</q-item-label>
