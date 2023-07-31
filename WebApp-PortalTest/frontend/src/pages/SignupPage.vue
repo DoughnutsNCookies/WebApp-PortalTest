@@ -27,7 +27,8 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, ref  } from 'vue'
+  import axios from 'axios'
+import { defineComponent, ref  } from 'vue'
   import { useRouter } from 'vue-router'
   export default defineComponent({
     name: 'SignupPage',
@@ -36,8 +37,22 @@
       const password = ref('')
       const router = useRouter();
 
-      const login = () => {
-        console.log('Signup with:', email.value, password.value);
+      const login = async () => {
+        try {
+          const url = 'http://localhost:3030/users'; // Replace with your API endpoint
+          const dataToSend = {
+            email: email.value,
+          	password: password.value
+          };
+
+          const response = await axios.post(url, dataToSend);
+
+          // Handle the response from the server
+          console.log('Response:', response.data);
+        } catch (error:any) {
+          // Handle errors here
+          console.error('Error:', error.message);
+        }
       }
       const changeToLogin = () => {
         router.push('/login');
