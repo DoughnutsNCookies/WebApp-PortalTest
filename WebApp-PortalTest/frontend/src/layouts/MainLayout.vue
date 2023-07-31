@@ -4,13 +4,13 @@
     <q-footer>
       <q-tabs switch-indicator>
         <q-route-tab
-          icon="map"
+          icon="dashboard"
           to="/"
           replace
           label="Dashboard"
         />
         <q-route-tab
-          icon="assignment"
+          icon="person"
           to="/profile"
           replace
           label="Profile"

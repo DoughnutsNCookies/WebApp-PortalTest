@@ -53,7 +53,7 @@
           }
           // Handle the response from the server
           console.log('Response:', response.data);
-        } catch (error:any) {
+        } catch (error) {
           // Handle errors here
           console.error('Error:', error.message);
         }
