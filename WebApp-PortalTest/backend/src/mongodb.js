@@ -1,18 +1,10 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/databases.html
 import { MongoClient } from 'mongodb'
-import type { Db } from 'mongodb'
-import type { Application } from './declarations'
+import dotenv from 'dotenv'
 
-const dotenv = require('dotenv')
-dotenv.config()
+dotenv.config();
 
-declare module './declarations' {
-  interface Configuration {
-    mongodbClient: Promise<Db>
-  }
-}
-
-export const mongodb = (app: Application) => {
+export const mongodb = (app) => {
   const mongodb_username = process.env.MONGODB_USERNAME
   const mongodb_password = process.env.MONGODB_PASSWORD
   const mongodb_cluster = process.env.MONGODB_CLUSTER
@@ -30,3 +22,4 @@ export const mongodb = (app: Application) => {
 
   app.set('mongodbClient', mongoClient)
 }
+

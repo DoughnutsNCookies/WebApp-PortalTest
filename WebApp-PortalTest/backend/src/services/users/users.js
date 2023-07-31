@@ -2,7 +2,6 @@
 import { authenticate } from '@feathersjs/authentication'
 
 import { hooks as schemaHooks } from '@feathersjs/schema'
-
 import {
   userDataValidator,
   userPatchValidator,
@@ -12,19 +11,17 @@ import {
   userDataResolver,
   userPatchResolver,
   userQueryResolver
-} from './users.schema'
+} from './users.schema.js'
+import { UserService, getOptions } from './users.class.js'
+import { userPath, userMethods } from './users.shared.js'
 
-import type { Application } from '../../declarations'
-import { UserService, getOptions } from './users.class'
-import { userPath, userMethods } from './users.shared'
+export * from './users.class.js'
+export * from './users.schema.js'
 
-export * from './users.class'
-export * from './users.schema'
-
-const checkDuplicateEmail = require('../../hooks/checkDuplicateEmail')
+import { checkDuplicateEmail } from '../../hooks/checkDuplicateEmail.js'
 
 // A configure function that registers the service and its hooks via `app.configure`
-export const user = (app: Application) => {
+export const user = (app) => {
   // Register our service on the Feathers application
   app.use(userPath, new UserService(getOptions(app)), {
     // A list of all methods this service exposes externally
@@ -62,11 +59,4 @@ export const user = (app: Application) => {
       all: []
     }
   })
-}
-
-// Add this service to the service type index
-declare module '../../declarations' {
-  interface ServiceTypes {
-    [userPath]: UserService
-  }
 }

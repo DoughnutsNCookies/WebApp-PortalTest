@@ -2,11 +2,8 @@
 import { resolve } from '@feathersjs/schema'
 import { Type, getValidator, querySyntax } from '@feathersjs/typebox'
 import { ObjectIdSchema } from '@feathersjs/typebox'
-import type { Static } from '@feathersjs/typebox'
 import { passwordHash } from '@feathersjs/authentication-local'
-
-import type { HookContext } from '../../declarations'
-import { dataValidator, queryValidator } from '../../validators'
+import { dataValidator, queryValidator } from '../../validators.js'
 
 // Main data model schema
 export const userSchema = Type.Object(
@@ -17,11 +14,10 @@ export const userSchema = Type.Object(
   },
   { $id: 'User', additionalProperties: false }
 )
-export type User = Static<typeof userSchema>
 export const userValidator = getValidator(userSchema, dataValidator)
-export const userResolver = resolve<User, HookContext>({})
+export const userResolver = resolve({})
 
-export const userExternalResolver = resolve<User, HookContext>({
+export const userExternalResolver = resolve({
   // The password should never be visible externally
   password: async () => undefined
 })
@@ -30,9 +26,8 @@ export const userExternalResolver = resolve<User, HookContext>({
 export const userDataSchema = Type.Pick(userSchema, ['email', 'password'], {
   $id: 'UserData'
 })
-export type UserData = Static<typeof userDataSchema>
 export const userDataValidator = getValidator(userDataSchema, dataValidator)
-export const userDataResolver = resolve<User, HookContext>({
+export const userDataResolver = resolve({
   password: passwordHash({ strategy: 'local' })
 })
 
@@ -40,9 +35,8 @@ export const userDataResolver = resolve<User, HookContext>({
 export const userPatchSchema = Type.Partial(userSchema, {
   $id: 'UserPatch'
 })
-export type UserPatch = Static<typeof userPatchSchema>
 export const userPatchValidator = getValidator(userPatchSchema, dataValidator)
-export const userPatchResolver = resolve<User, HookContext>({
+export const userPatchResolver = resolve({
   password: passwordHash({ strategy: 'local' })
 })
 
@@ -56,9 +50,8 @@ export const userQuerySchema = Type.Intersect(
   ],
   { additionalProperties: false }
 )
-export type UserQuery = Static<typeof userQuerySchema>
 export const userQueryValidator = getValidator(userQuerySchema, queryValidator)
-export const userQueryResolver = resolve<UserQuery, HookContext>({
+export const userQueryResolver = resolve({
   // If there is a user (e.g. with authentication), they are only allowed to see their own data
   _id: async (value, user, context) => {
     if (context.params.user) {
