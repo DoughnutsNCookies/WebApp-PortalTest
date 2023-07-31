@@ -9,5 +9,26 @@
     "default": 10,
     "max": 50
   },
-  "mongodb": ""
+  "mongodb": "",
+  "authentication": {
+    "entity": "user",
+    "service": "users",
+    "secret": "rKCfAJMZNg1+6MDKSZFXL5S18nk6Rkju",
+    "authStrategies": [
+      "jwt",
+      "local"
+    ],
+    "jwtOptions": {
+      "header": {
+        "typ": "access"
+      },
+      "audience": "https://yourdomain.com",
+      "algorithm": "HS256",
+      "expiresIn": "1d"
+    },
+    "local": {
+      "usernameField": "email",
+      "passwordField": "password"
+    }
+  }
 }
