@@ -8,7 +8,21 @@ import { dataValidator, queryValidator } from '../../validators.js'
 export const formSchema = Type.Object(
   {
     _id: ObjectIdSchema(),
-    text: Type.String()
+    email: Type.String(),
+    fullName: Type.String(),
+    telephone: Type.String(),
+    dateOfBirth: Type.Number(),
+    gender: Type.String(),
+    nationality: Type.String(),
+    religion: Type.String(),
+    occupation: Type.String(),
+    address: Type.String(),
+    companyName: Type.String(),
+    monthlyContribution: Type.String(),
+    shares: Type.String(),
+    bankAccountNumber: Type.String(),
+    bankName: Type.String(),
+    authorityLevel: Type.String(),
   },
   { $id: 'Form', additionalProperties: false }
 )
