@@ -21,11 +21,18 @@ export class FormService extends MongoDBService {
       'bankName',
       'authorityLevel'
     ]
+
     const missingFields = requiredFields.filter((field) => !data[field])
     if (missingFields.length > 0) {
       throw new BadRequest('Missing fields: ' + missingFields.join(', '))
     }
-    data.creatorId = params.user._id;
+
+    const unexpectedFields = Object.keys(data).filter((field) => !requiredFields.includes(field))
+    if (unexpectedFields.length > 0) {
+      throw new BadRequest('Unexpected fields: ' + unexpectedFields.join(', '))
+    }
+
+    data.creatorId = params.user._id
     return super.create(data, params)
   }
 }
