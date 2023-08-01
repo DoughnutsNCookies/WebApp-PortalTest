@@ -48,8 +48,8 @@
 
           const response = await axios.post(url, dataToSend);
           if (response.status === 200) {
-            router.push('/login');
             console.log('Success:', response.data);
+            router.push('/login');
           }
 
           // Handle the response from the server

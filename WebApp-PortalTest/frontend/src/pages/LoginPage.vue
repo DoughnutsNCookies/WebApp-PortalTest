@@ -48,6 +48,8 @@
           const response = await axios.post(url, dataToSend);
 
           if (response.status === 200) {
+            if (response.data.accessToken)
+              localStorage.setItem('accessToken', response.data.accessToken);
             router.push('/');
             console.log('Success:', response.data);
           }
