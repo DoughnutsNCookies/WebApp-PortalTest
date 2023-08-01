@@ -12,11 +12,11 @@ const upload = multer({
 	}),
 })
 
-router.post('/upload', upload.single('file'), (ctx) => {
+router.post('/signatureUpload', upload.single('file'), (ctx) => {
   console.log(ctx)
 	console.log(ctx.request.file);
 	console.log(ctx.request.body);
-  ctx.body = 'Done';
+  ctx.body = { message: 'Upload successful!'};
 })
 
 export const multerUpload = (app) => {
