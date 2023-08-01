@@ -263,8 +263,8 @@ export default defineComponent({
     const uploadImages = () => {
       const newFormData = new FormData();
       newFormData.append('id', memberId.value);
-      newFormData.append('icfront', icfront.value);
-      newFormData.append('icback', icback.value);
+      newFormData.append('icfront', new File([ icfront.value],memberId.value +"-icfront."+ icfront.value.name.split('.').pop()));
+      newFormData.append('icback', new File([ icback.value],memberId.value +"-icback."+ icback.value.name.split('.').pop()));
       const {isEmpty, data} = signaturePadRef.value.saveSignature();
       if (!isEmpty) {
         newFormData.append('signature', data);
