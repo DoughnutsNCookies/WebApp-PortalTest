@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="q-gutter-md">
-    <h4 class="q-h6">Add New Member</h4>
+      <h4 class="q-h6">Add New Member</h4>
       <q-form @submit="addNewMember">
         <div class="q-gutter-md">
           <q-input
@@ -81,6 +81,7 @@
             label="Bank Name"
             type="text"
           />
+          <q-select outlined v-model="authorityLevel" :options="authorityOptions" label="Outlined" />
           <div class="column" style="display: grid; justify-content: center;gap: 18px;">
             <VueSignaturePad
             style="border: 1px solid black;"
@@ -134,20 +135,57 @@ export default defineComponent({
     const signature = ref(null);
     const date = ref('');
     const authorityLevel = ref('');
+
     const contributionOptions=[
       "RM 30",
       "RM 50",
       "RM 100",
       "others",
     ]
+    const authorityOptions=[
+      "Admin",
+      "Member",
+      "Senior Member"
+    ]
 
     const addNewMember = async ()=>{
-      console.log('add new member')
-      console.log(gender.value)
+      const accessToken = localStorage.getItem('accessToken');
+      axios.defaults.headers.common['Authorization'] = accessToken;
+      const dataToSend ={
+        fullName : fullName.value,
+        telephone : telephone.value,
+        dateOfBirth : dateOfBirth.value,
+        email : email.value,
+        gender : gender.value,
+        nationality : nationality.value,
+        religion : religion.value,
+        occupation : occupation.value,
+        address : address.value,
+        companyName : nameOfCompany.value,
+        monthlyContribution : monthlyContribution.value,
+        shares : share.value,
+        bankAccountNumber : bankAccountNumber.value,
+        bankName : bankName.value,
+        authorityLevel : authorityLevel.value,
+      }
+      axios.post('http://localhost:3030/form', dataToSend).then((response) => {
+        if (response.status === 201) {
+          console.log(response.data);
+          router.push('/');
+        } else if (response.status > 400) {
+          console.log(response.data);
+          router.push('/login');
+        }
+      }).catch((error) => {
+        console.log(error);
+        localStorage.removeItem('accessToken');
+        router.push('/login');
+      });
       return;
     }
 
     return {
+      authorityOptions,
       contributionOptions,
       addNewMember,
       fullName,

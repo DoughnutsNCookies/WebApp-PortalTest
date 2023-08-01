@@ -22,20 +22,9 @@
 </template>
 
 <script>
-import { defineComponent,onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'IndexPage',
-  setup() {
-    const router = useRouter();
-    onMounted(() => {
-      if (!localStorage.getItem('accessToken')) {
-        router.push('/login');
-      }
-      console.log('IndexPage mounted');
-    });
-    return {};
-  },
 });
 </script>
