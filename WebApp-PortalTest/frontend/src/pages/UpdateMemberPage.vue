@@ -146,12 +146,11 @@
               <VueSignaturePad
               style="border: 1px solid black;"
               ref="signaturePad"
-              :images="[signature]"	
               v-model="signature"
               class="signature-pad"
               width="300px"
               height="200px"
-              :style="!fab?'display: none;':''"
+              :style="!fab?'opacity: 0;':'opacity: 1;'"
               :disable="!fab"
               :options="{
                 penColor: 'rgb(0, 0, 0)',
@@ -343,6 +342,7 @@
           newFormData.append('icback', updateIcback.value);
         const {isEmpty, data} = signaturePad.value.saveSignature();
         if (!isEmpty) {
+          console.log('signature is not empty');
           newFormData.append('signature', data);
         }
         // newFormData.append('signature', signaturePadRef.value.getSignatureImage());
@@ -353,6 +353,8 @@
           console.log('no file to upload')
           return;
         }
+        const accessToken = localStorage.getItem('accessToken');
+        axios.defaults.headers.common['Authorization'] = accessToken;
         axios.patch("http://localhost:3030/upload",newFormData).then((response) => {
           switch (response.status) {
             case 201:
@@ -376,8 +378,6 @@
           }
         }).catch((error) => {
           console.log(error);
-          localStorage.removeItem('accessToken');
-          router.push('/login');
         });
       }
   
