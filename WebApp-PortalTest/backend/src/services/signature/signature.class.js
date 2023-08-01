@@ -20,6 +20,19 @@ export class SignatureService extends MongoDBService {
       throw new NotFound('Documents not found')
     }
   }
+
+  async findImage(query) {
+    const findData = await super.find({ query: query })
+    console.log(findData)
+    if (findData.total === 0) throw new NotFound('Documents not found')
+    return findData
+  }
+
+  async updateImage(query, data) {
+    const findData = await super.find({ query: query })
+    if (findData.total === 0) throw new NotFound('Documents not found')
+    return await super.update(findData.data[0]._id, data)
+  }
 }
 
 export const getOptions = (app) => {
