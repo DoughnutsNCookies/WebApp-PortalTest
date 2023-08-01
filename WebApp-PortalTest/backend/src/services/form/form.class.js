@@ -4,7 +4,6 @@ import { MongoDBService } from '@feathersjs/mongodb'
 // By default calls the standard MongoDB adapter service methods but can be customized with your own functionality.
 export class FormService extends MongoDBService {
   async create(data, params) {
-    console.log(params);
     const requiredFields = [
       'email',
       'fullName',
@@ -20,7 +19,6 @@ export class FormService extends MongoDBService {
       'shares',
       'bankAccountNumber',
       'bankName',
-      'date',
       'authorityLevel'
     ]
     const missingFields = requiredFields.filter((field) => !data[field])
