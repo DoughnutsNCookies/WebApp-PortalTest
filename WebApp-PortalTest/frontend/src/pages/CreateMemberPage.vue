@@ -273,35 +273,14 @@ export default defineComponent({
           console.log(response.data);
           memberId.value = response.data._id;
           stage.value = 1;
-          $q.notify({
-            color: 'positive',
-            message: 'Member Created',
-            position: 'top',
-            timeout: 1000,
-            actions: [{ icon: 'close', color: 'white' }]
-          })
           break;
         case 400:
           console.log(response.data);
-          $q.notify({
-            color: 'red',
-            message: 'Invalid Input',
-            position: 'top',
-            timeout: 1000,
-            actions: [{ icon: 'close', color: 'white' }]
-          })
           break;
         case 401:
           console.log(response.data);
           localStorage.removeItem('accessToken');
           router.push('/login');
-          $q.notify({
-            color: 'red',
-            message: 'Unauthorized',
-            position: 'top',
-            timeout: 1000,
-            actions: [{ icon: 'close', color: 'white' }]
-          })
           break;
         default:
           break;
