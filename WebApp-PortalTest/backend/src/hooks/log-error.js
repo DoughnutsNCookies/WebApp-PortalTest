@@ -1,6 +1,6 @@
 import { logger } from '../logger.js'
 
-const showError = false
+const showError = true
 
 export const logError = async (context, next) => {
   try {
