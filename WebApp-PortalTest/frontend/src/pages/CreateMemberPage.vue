@@ -1,7 +1,7 @@
 <template>
-  <q-page v-if="stage === 0" padding class="q-gutter-md">
+  <q-page v-if="stage === 0" padding class="q-gutter-md column">
       <h4 class="q-h6">Add New Member</h4>
-      <q-form @submit="addNewMember">
+      <q-form @submit="nextToSignature">
         <div class="q-gutter-md">
           <q-input
             autofocus
@@ -81,10 +81,19 @@
             label="Bank Name"
             type="text"
           />
-          <q-select outlined v-model="authorityLevel" :options="authorityOptions" label="Authority Level" />
+          <q-select outlined 
+            v-model="authorityLevel" 
+            :options="authorityOptions" 
+            label="Authority Level" 
+          />
           
         </div>
-        <q-btn type="submit" color="primary" class="q-mt-md" label="Add"/>
+        <q-btn type="submit" 
+          color="primary" 
+          class="q-mt-md" 
+          label="Next" 
+          style="position: fixed; bottom: 100px; right: 20px;" 
+        />
       </q-form>
     </q-page>
     
@@ -112,6 +121,7 @@
             @added="onPickIcBack"
             @rejected="onRejected"
           />
+          <p style="margin: 0 0 0;">Signature</p>
           <VueSignaturePad
           style="border: 1px solid black;"
           ref="signaturePadRef"
@@ -123,11 +133,18 @@
             penColor: 'rgb(0, 0, 0)',
           }"
           />
+          <q-btn 
+            color="primary" 
+            class="q-mt-md" 
+            label="Back" 
+            @click="stage = 0"
+            style="position: fixed; bottom: 100px; left: 20px;" 
+          />
           <q-btn-group push>
             <q-btn push label="Undo" icon="visibility" @click="undoSignature" />
             <q-btn push label="Clear" icon="update" @click="clearSignature" />
           </q-btn-group>
-          <q-btn color="primary" class="q-mt-md" label="upload attachment" @click="uploadImages"/>
+          <q-btn color="primary" class="q-mt-md" label="upload attachment" @click="submitAll"/>
         </div>
       </div>
     </div>
@@ -139,12 +156,16 @@ import { defineComponent, ref } from 'vue';
 import axios from 'axios';
 import { VueSignaturePad } from 'vue-signature-pad';
 import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar'
+
 export default defineComponent({
   name: 'CreateMemberPage',
   components: {
     VueSignaturePad
   },
   setup() {
+    const $q = useQuasar()
+
     const router = useRouter();
     const stage = ref(0);
     // Dom Elements
@@ -208,34 +229,15 @@ export default defineComponent({
         bankName : bankName.value,
         authorityLevel : authorityLevel.value,
       }
-      axios.post('http://localhost:3030/form', dataToSend).then((response) => {
-        switch (response.status) {
-          case 201:
-            console.log(response.data);
-            memberId.value = response.data._id;
-            stage.value = 1;
-            break;
-          case 200:
-            console.log(response.data);
-            router.push('/');
-            break;
-          case 400:
-            console.log(response.data);
-            break;
-          case 401:
-            console.log(response.data);
-            localStorage.removeItem('accessToken');
-            router.push('/login');
-            break;
-          default:
-            break;
-        }
-      }).catch((error) => {
-        console.log(error);
-        localStorage.removeItem('accessToken');
-        router.push('/login');
-      });
-      return;
+      return axios.post('http://localhost:3030/form', dataToSend);
+    }
+
+    const nextToSignature = ()=>{
+      stage.value = 1;
+    }
+
+    const backToForm = ()=>{
+      stage.value = 0;
     }
 
     const undoSignature = () => {
@@ -259,8 +261,54 @@ export default defineComponent({
     const onRejected= (evt)=>{
 
     }
-
-    const uploadImages = () => {
+    
+    const submitAll = async () => {
+      const accessToken = localStorage.getItem('accessToken');
+      axios.defaults.headers.common['Authorization'] = accessToken;
+      
+      
+      const response = await addNewMember();
+      switch (response.status) {
+        case 201:
+          console.log(response.data);
+          memberId.value = response.data._id;
+          stage.value = 1;
+          $q.notify({
+            color: 'positive',
+            message: 'Member Created',
+            position: 'top',
+            timeout: 1000,
+            actions: [{ icon: 'close', color: 'white' }]
+          })
+          break;
+        case 400:
+          console.log(response.data);
+          $q.notify({
+            color: 'red',
+            message: 'Invalid Input',
+            position: 'top',
+            timeout: 1000,
+            actions: [{ icon: 'close', color: 'white' }]
+          })
+          break;
+        case 401:
+          console.log(response.data);
+          localStorage.removeItem('accessToken');
+          router.push('/login');
+          $q.notify({
+            color: 'red',
+            message: 'Unauthorized',
+            position: 'top',
+            timeout: 1000,
+            actions: [{ icon: 'close', color: 'white' }]
+          })
+          break;
+        default:
+          break;
+      }
+      if (response.status !== 201) {
+        return;
+      }
       const newFormData = new FormData();
       newFormData.append('formId', memberId.value);
       newFormData.append('icfront', icfront.value);
@@ -273,8 +321,6 @@ export default defineComponent({
       for (const entry of newFormData){
         console.log(entry);
       }
-      const accessToken = localStorage.getItem('accessToken');
-      axios.defaults.headers.common['Authorization'] = accessToken;
       axios.post("http://localhost:3030/upload",newFormData).then((response) => {
         switch (response.status) {
           case 201:
@@ -319,13 +365,15 @@ export default defineComponent({
       contributionOptions,
 
       // methods
+      nextToSignature,
+      backToForm,
       onPickIcfront,
       onPickIcBack,
       undoSignature,
       clearSignature,
       onRejected,
       addNewMember,
-      uploadImages,
+      submitAll,
 
       // form data
       fullName,
