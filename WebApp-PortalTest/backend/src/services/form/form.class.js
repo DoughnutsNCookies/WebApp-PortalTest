@@ -25,7 +25,7 @@ export class FormService extends MongoDBService {
     if (missingFields.length > 0) {
       throw new BadRequest('Missing fields: ' + missingFields.join(', '))
     }
-    data.createdBy = params.user._id;
+    data.creatorId = params.user._id;
     return super.create(data, params)
   }
 }
