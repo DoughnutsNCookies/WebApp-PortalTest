@@ -20,7 +20,7 @@ router.post(
     { name: 'icfront', maxCount: 1 },
     { name: 'icback', maxCount: 1 },
     { name: 'signature', maxCount: 1 },
-    { name: 'id', maxCount: 1 }
+    { name: 'formId', maxCount: 1 }
   ]),
   async (ctx) => {
     const { id, signature } = ctx.request.body
