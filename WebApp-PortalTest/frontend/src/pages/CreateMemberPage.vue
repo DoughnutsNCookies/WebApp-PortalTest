@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="q-gutter-md">
+  <q-page v-if="stage === 0" padding class="q-gutter-md">
       <h4 class="q-h6">Add New Member</h4>
       <q-form @submit="addNewMember">
         <div class="q-gutter-md">
@@ -82,28 +82,47 @@
             type="text"
           />
           <q-select outlined v-model="authorityLevel" :options="authorityOptions" label="Outlined" />
-          <div class="column" style="display: grid; justify-content: center;gap: 18px;">
-            <VueSignaturePad
-            style="border: 1px solid black;"
-            ref="signaturePad"
-            v-model="signature"
-            class="signature-pad"
-            width="300px"
-            height="200px"
-            :options="{
-              penColor: 'rgb(0, 0, 0)',
-            }"
-            />
-            <q-input
-              outlined
-              v-model="date"
-              label="Date"
-              type="date"
-            />
-          </div>
+          
         </div>
         <q-btn type="submit" color="primary" class="q-mt-md" label="Add"/>
       </q-form>
+    </q-page>
+    
+  <q-page v-if="stage === 1">
+    <div class="q-pa-md flex justify-center">
+      <div style="width: 80vw;">
+        <div class="column" style="display: grid; justify-content: center;gap: 18px;">
+          <q-uploader
+            style="max-width: 300px"
+            label="Ic Front"
+            hide-upload-button
+            accept=".jpg,.png, image/*"
+            @added="onPickIcfront"
+            @rejected="onRejected"
+          />
+          <q-uploader
+            style="max-width: 300px"
+            label="Ic Back"
+            hide-upload-button
+            accept=".jpg,.png, image/*"
+            @added="onPickIcBack"
+            @rejected="onRejected"
+          />
+          <VueSignaturePad
+          style="border: 1px solid black;"
+          ref="signaturePadRef"
+          v-model="signature"
+          class="signature-pad"
+          width="300px"
+          height="200px"
+          :options="{
+            penColor: 'rgb(0, 0, 0)',
+          }"
+          />
+          <q-btn color="primary" class="q-mt-md" label="upload attachment" @click="uploadImages"/>
+        </div>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -111,13 +130,20 @@
 import { defineComponent, ref } from 'vue';
 import axios from 'axios';
 import { VueSignaturePad } from 'vue-signature-pad';
-
 export default defineComponent({
   name: 'CreateMemberPage',
   components: {
     VueSignaturePad
   },
   setup() {
+    const stage = ref(1);
+    // Dom Elements
+    const signaturePadRef = ref(null)
+
+    // member id
+    const memberId = ref('');
+
+    // form data
     const fullName = ref('')
     const telephone = ref('')
     const dateOfBirth = ref('')
@@ -132,10 +158,14 @@ export default defineComponent({
     const share = ref(0);
     const bankAccountNumber = ref('');
     const bankName = ref('');
-    const signature = ref(null);
-    const date = ref('');
     const authorityLevel = ref('');
+    
+    // files 
+    const icfront = ref(null);
+    const icback = ref(null);
+    const signature = ref(null);
 
+    // optionsa
     const contributionOptions=[
       "RM 30",
       "RM 50",
@@ -169,12 +199,26 @@ export default defineComponent({
         authorityLevel : authorityLevel.value,
       }
       axios.post('http://localhost:3030/form', dataToSend).then((response) => {
-        if (response.status === 201) {
-          console.log(response.data);
-          router.push('/');
-        } else if (response.status > 400) {
-          console.log(response.data);
-          router.push('/login');
+        switch (response.status) {
+          case 200:
+            console.log(response.data);
+            memberId.value = response.data.memberId;
+            stage.value = 1;
+            break;
+          case 201:
+            console.log(response.data);
+            router.push('/');
+            break;
+          case 400:
+            console.log(response.data);
+            break;
+          case 401:
+            console.log(response.data);
+            localStorage.removeItem('accessToken');
+            router.push('/login');
+            break;
+          default:
+            break;
         }
       }).catch((error) => {
         console.log(error);
@@ -184,10 +228,55 @@ export default defineComponent({
       return;
     }
 
+    const onPickIcfront= (evt)=>{
+      console.log(evt);
+      icfront.value = evt.file;
+    }
+
+    const onPickIcBack= (evt)=>{
+      console.log(evt);
+      icback.value = evt.file;
+    }
+
+    const onRejected= (evt)=>{
+
+    }
+
+    const uploadImages = () => {
+      const newFormData = new FormData();
+      newFormData.append('icfront', icfront.value);
+      newFormData.append('icback', icback.value);
+      console.log(signaturePadRef.value.getSignatureImage());
+      // newFormData.append('signature', signaturePadRef.value.getSignatureImage());
+      for (const entry of newFormData){
+        console.log(entry);
+      }
+      console.form(newFormData);
+    }
+
     return {
+      stage,
+
+      // Dom Elements
+      signaturePadRef,
+
+      // images
+      icfront,
+      icback,
+      signature,
+
+      // options
       authorityOptions,
       contributionOptions,
+
+      // methods
+      onPickIcfront,
+      onPickIcBack,
+      onRejected,
       addNewMember,
+      uploadImages,
+
+      // form data
       fullName,
       telephone,
       dateOfBirth,
@@ -202,8 +291,6 @@ export default defineComponent({
       share,
       bankAccountNumber,
       bankName,
-      signature,
-      date,
       authorityLevel,
     }
   }

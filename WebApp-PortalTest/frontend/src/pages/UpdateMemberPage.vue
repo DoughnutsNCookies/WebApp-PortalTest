@@ -131,7 +131,7 @@
   </template>
   
   <script >
-  import { defineComponent, ref } from 'vue';
+  import { defineComponent, ref, watch, onMounted } from 'vue';
   import axios from 'axios';
   import { VueSignaturePad } from 'vue-signature-pad';
   
@@ -143,7 +143,7 @@
     setup() {
     const fab = ref(false)
     let submitting = false
-
+      const signaturePad = ref(null)
       const fullName = ref('')
       const telephone = ref('')
       const dateOfBirth = ref('')
@@ -167,6 +167,18 @@
         "RM 100",
         "others",
       ]
+      
+      onMounted(() => {
+        signaturePad.value.lockSignaturePad()
+      }),
+
+      watch(fab, (val) => {
+        if (val) {
+          signaturePad.value.openSignaturePad()
+        } else {
+          signaturePad.value.lockSignaturePad()
+        }
+      })
   
       const fabHide = () => {
         if (!fab.value && !submitting){ 
@@ -184,6 +196,8 @@
       }
   
       return {
+        signaturePad,
+
         fabHide,
         fab,
         contributionOptions,
