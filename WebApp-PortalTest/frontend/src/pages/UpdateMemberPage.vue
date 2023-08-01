@@ -95,9 +95,26 @@
             />
             <q-select outlined v-model="authorityLevel" :options="authorityOptions" label="Authority Level" :disable="!fab"/>
             <div class="column" style="display: grid; justify-content: center;gap: 18px;">
+              <q-img
+                :src="icfront"
+                spinner-color="white"
+                style="height: 140px; max-width: 400px"
+              />
+              <q-img
+                :src="icback"
+                spinner-color="white"
+                style="height: 140px; max-width: 400px"
+              />
+              <q-img
+                v-if="!fab"
+                :src="signature"
+                spinner-color="white"
+                style="height: 200px; max-width: 400px"
+              />
               <VueSignaturePad
               style="border: 1px solid black;"
               ref="signaturePad"
+              :images="[signature]"	
               v-model="signature"
               class="signature-pad"
               width="300px"
@@ -162,7 +179,6 @@
       const share = ref(0);
       const bankAccountNumber = ref('');
       const bankName = ref('');
-      const signature = ref(null);
       const date = ref('');
       const authorityLevel = ref('');
       const contributionOptions=[
@@ -172,10 +188,15 @@
         "others",
       ]
       const authorityOptions=[
-      "Admin",
-      "Member",
-      "Senior Member"
-    ]
+        "Admin",
+        "Member",
+        "Senior Member"
+      ]
+      // files 
+      const icfront = ref(null);
+      const icback = ref(null);
+      const signature = ref(null);
+      
       const getData = () => {
         const accessToken = localStorage.getItem('accessToken');
         axios.defaults.headers.common['Authorization'] = accessToken;
@@ -200,6 +221,16 @@
             signature.value = response.data.signature
             date.value = response.data.date
             authorityLevel.value = response.data.authorityLevel
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+        axios.get('http://localhost:3030/signature/'+ route.params.id)
+          .then((response) => {
+            console.log(response);
+            icfront.value = response.data.icFront
+            icback.value = response.data.icBack
+            signature.value = response.data.signature
           })
           .catch((error) => {
             console.log(error);
@@ -288,6 +319,8 @@
         signature,
         date,
         authorityLevel,
+        icback,
+        icfront,
       }
     }
   })
