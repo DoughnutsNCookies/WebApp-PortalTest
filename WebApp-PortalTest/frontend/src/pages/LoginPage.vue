@@ -42,12 +42,13 @@
           const url = 'http://localhost:3030/authentication'; // Replace with your API endpoint
           const dataToSend = {
             email: email.value,
-          	password: password.value
+          	password: password.value,
+            strategy: 'local'
           };
 
           const response = await axios.post(url, dataToSend);
 
-          if (response.status === 200) {
+          if (response.status === 201) {
             if (response.data.accessToken)
               localStorage.setItem('accessToken', response.data.accessToken);
             router.push('/');

@@ -26,8 +26,27 @@
 </template>
 
 <script>
-import { defineComponent} from 'vue'
+import { defineComponent, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios';
+
 export default defineComponent({
   name: 'MainLayout',
+  setup() {
+    const router = useRouter();
+    onMounted(() => {
+      const accessToken = localStorage.getItem('accessToken');
+      axios.defaults.headers.common['Authorization'] = accessToken;
+      axios.get('http://localhost:3030/users').then((response) => {
+        console.log(response);
+      }).catch((error) => {
+        console.log(error);
+        localStorage.removeItem('accessToken');
+        router.push('/login');
+      });
+      console.log('IndexPage mounted');
+    });
+    return {}
+  }
 })
 </script>
