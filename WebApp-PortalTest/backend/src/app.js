@@ -36,13 +36,14 @@ app.configure(
   })
 )
 
-app.configure(multerUpload)
 app.configure(mongodb)
 
 app.configure(authentication)
 
 app.configure(services)
 app.configure(channels)
+
+app.configure(multerUpload)
 
 // Register hooks that run on all service methods
 app.hooks({
