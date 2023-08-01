@@ -11,7 +11,7 @@ export const formSchema = Type.Object(
     email: Type.String(),
     fullName: Type.String(),
     telephone: Type.String(),
-    dateOfBirth: Type.Number(),
+    dateOfBirth: Type.String(),
     gender: Type.String(),
     nationality: Type.String(),
     religion: Type.String(),
