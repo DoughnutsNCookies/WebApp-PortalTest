@@ -12,6 +12,7 @@ import { authentication } from './authentication.js'
 
 import { services } from './services/index.js'
 import { channels } from './channels.js'
+import { multerUpload } from './multer.js'
 
 const app = koa(feathers())
 
@@ -34,6 +35,8 @@ app.configure(
     }
   })
 )
+
+app.configure(multerUpload)
 app.configure(mongodb)
 
 app.configure(authentication)
