@@ -4,15 +4,15 @@
       <div style="width: 80vw;">
         <q-list bordered separator
 
-          v-for="index in 60"
-          :key="index"
+          v-for="member in members"
+          :key="member._id"
         >
           <q-item clickable v-ripple
-            :to="'/member/' + index"
+            :to="'/member/' + member._id"
           >
             <q-item-section>
-              <q-item-label overline>OVERLINE</q-item-label>
-              <q-item-label>Item with caption {{ index }}</q-item-label>
+              <q-item-label overline>{{ member.fullName }}</q-item-label>
+              <q-item-label>{{ member.email }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -27,18 +27,46 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'IndexPage',
   setup() {
     const router = useRouter();
+
+    const members = ref([]);
     const createMember = () => {
       router.push('/create-member');
       console.log('createMember');
     }
-    return { createMember }
+
+    onMounted(() => {
+      const accessToken = localStorage.getItem('accessToken');
+      axios.defaults.headers.common['Authorization'] = accessToken;
+      axios.get('http://localhost:3030/form/?$limit=20&$skip=0')
+        .then((response) => {
+          console.log(response);
+          members.value = response.data.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+      window.addEventListener('scroll', () => {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+          axios.get('http://localhost:3030/form/?$limit=20&$skip=' + members.value.length)
+            .then((response) => {
+              console.log(response);
+              members.value = members.value.concat(response.data.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+        }
+      })
+    })
+    return { createMember, members }
   }
 });
 </script>

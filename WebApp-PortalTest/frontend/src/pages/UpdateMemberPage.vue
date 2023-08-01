@@ -135,6 +135,7 @@
   import { defineComponent, ref, watch, onMounted } from 'vue';
   import axios from 'axios';
   import { VueSignaturePad } from 'vue-signature-pad';
+  import { useRoute } from 'vue-router';
   
   export default defineComponent({
     name: 'UpdateMemberPage',
@@ -142,8 +143,10 @@
       VueSignaturePad
     },
     setup() {
-    const fab = ref(false)
-    let submitting = false
+      const route = useRoute();
+
+      const fab = ref(false)
+      let submitting = false
       const signaturePad = ref(null)
       const fullName = ref('')
       const telephone = ref('')
@@ -176,6 +179,33 @@
       
       onMounted(() => {
         signaturePad.value.lockSignaturePad()
+        const accessToken = localStorage.getItem('accessToken');
+        axios.defaults.headers.common['Authorization'] = accessToken;
+        axios.get('http://localhost:3030/form/'+ route.params.id)
+          .then((response) => {
+            console.log(response);
+             
+            fullName.value = response.data.fullName;
+            telephone.value = response.data.telephone;
+            dateOfBirth.value = response.data.dateOfBirth;
+            email.value = response.data.email;
+            gender.value = response.data.gender;
+            nationality.value = response.data.nationality
+            religion.value = response.data.religion
+            occupation.value = response.data.occupation
+            address.value = response.data.address
+            nameOfCompany.value = response.data.companyName
+            monthlyContribution.value = response.data.monthlyContribution
+            share.value = response.data.shares
+            bankAccountNumber.value = response.data.bankAccountNumber
+            bankName.value = response.data.bankName
+            signature.value = response.data.signature
+            date.value = response.data.date
+            authorityLevel.value = response.data.authorityLevel
+          })
+          .catch((error) => {
+            console.log(error);
+          })
       }),
 
       watch(fab, (val) => {
@@ -194,11 +224,39 @@
         }
         submitting = false
       }
+
+      const addNewMember = async ()=>{
+        const accessToken = localStorage.getItem('accessToken');
+        axios.defaults.headers.common['Authorization'] = accessToken;
+        const dataToSend ={
+          fullName : fullName.value,
+          telephone : telephone.value,
+          dateOfBirth : dateOfBirth.value,
+          email : email.value,
+          gender : gender.value,
+          nationality : nationality.value,
+          religion : religion.value,
+          occupation : occupation.value,
+          address : address.value,
+          companyName : nameOfCompany.value,
+          monthlyContribution : monthlyContribution.value,
+          shares : share.value,
+          bankAccountNumber : bankAccountNumber.value,
+          bankName : bankName.value,
+          authorityLevel : authorityLevel.value,
+        }
+        return axios.patch('http://localhost:3030/form/' + route.params.id, dataToSend);
+      }
+      
       const updateMemberInfo = async ()=>{
         submitting = true
         console.log('add new member')
-        console.log(gender.value)
-        return;
+        try {
+          const result = await addNewMember()
+          console.log(result)
+        } catch (error) {
+          console.log(error)
+        }
       }
   
       return {
