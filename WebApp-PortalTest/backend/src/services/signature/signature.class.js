@@ -23,7 +23,6 @@ export class SignatureService extends MongoDBService {
 
   async findImage(query) {
     const findData = await super.find({ query: query })
-    console.log(findData)
     if (findData.total === 0) throw new NotFound('Documents not found')
     return findData
   }

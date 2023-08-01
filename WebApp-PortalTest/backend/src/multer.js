@@ -84,8 +84,7 @@ router.patch(
     }
     try {
       if (signature !== "") {
-        const msg = await signatureService.updateImage({ formId: formId }, data);
-        console.log(msg);
+        await signatureService.updateImage({ formId: formId }, data);
       }
       ctx.body = { message: "Update successful" };
     } catch (error) {
