@@ -1,5 +1,5 @@
 <template>
-    <q-page padding class="q-gutter-md">
+    <q-page padding class="q-gutter-md column">
         <h4 class="q-h6">Member Info</h4>
         <q-form @submit="updateMemberInfo">
           <div class="q-gutter-md">

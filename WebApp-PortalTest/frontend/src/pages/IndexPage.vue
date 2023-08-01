@@ -17,14 +17,28 @@
           </q-item>
         </q-list>
       </div>
+      <q-btn color="primary" @click="createMember" icon="add" 
+        label="Add new Member" 
+        rounded
+        style="position: fixed; bottom: 100px; right: 20px;" 
+      />
   </div>
   </q-page>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'IndexPage',
+  setup() {
+    const router = useRouter();
+    const createMember = () => {
+      router.push('/create-member');
+      console.log('createMember');
+    }
+    return { createMember }
+  }
 });
 </script>

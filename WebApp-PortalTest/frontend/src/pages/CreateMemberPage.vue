@@ -91,11 +91,13 @@
   <q-page v-if="stage === 1">
     <div class="q-pa-md flex justify-center">
       <div style="width: 80vw;">
-        <div class="column" style="display: grid; justify-content: center;gap: 18px;">
+        <div class="column items-center" style=" gap: 18px;">
           <q-uploader
             style="max-width: 300px"
             label="Ic Front"
-            hide-upload-button
+            multiple="false"
+            max-files="1"
+            hide-upload-btn
             accept=".jpg,.png, image/*"
             @added="onPickIcfront"
             @rejected="onRejected"
@@ -103,7 +105,9 @@
           <q-uploader
             style="max-width: 300px"
             label="Ic Back"
-            hide-upload-button
+            multiple="false"
+            max-files="1"
+            hide-upload-btn
             accept=".jpg,.png, image/*"
             @added="onPickIcBack"
             @rejected="onRejected"
@@ -119,6 +123,10 @@
             penColor: 'rgb(0, 0, 0)',
           }"
           />
+          <q-btn-group push>
+            <q-btn push label="Undo" icon="visibility" @click="undoSignature" />
+            <q-btn push label="Clear" icon="update" @click="clearSignature" />
+          </q-btn-group>
           <q-btn color="primary" class="q-mt-md" label="upload attachment" @click="uploadImages"/>
         </div>
       </div>
@@ -130,13 +138,15 @@
 import { defineComponent, ref } from 'vue';
 import axios from 'axios';
 import { VueSignaturePad } from 'vue-signature-pad';
+import { useRouter } from 'vue-router';
 export default defineComponent({
   name: 'CreateMemberPage',
   components: {
     VueSignaturePad
   },
   setup() {
-    const stage = ref(1);
+    const router = useRouter();
+    const stage = ref(0);
     // Dom Elements
     const signaturePadRef = ref(null)
 
@@ -200,12 +210,12 @@ export default defineComponent({
       }
       axios.post('http://localhost:3030/form', dataToSend).then((response) => {
         switch (response.status) {
-          case 200:
+          case 201:
             console.log(response.data);
             memberId.value = response.data.memberId;
             stage.value = 1;
             break;
-          case 201:
+          case 200:
             console.log(response.data);
             router.push('/');
             break;
@@ -228,14 +238,22 @@ export default defineComponent({
       return;
     }
 
+    const undoSignature = () => {
+      signaturePadRef.value.undoSignature();
+    }
+
+    const clearSignature = () => {
+      signaturePadRef.value.clearSignature();
+    }
+
     const onPickIcfront= (evt)=>{
       console.log(evt);
-      icfront.value = evt.file;
+      icfront.value = evt[0];
     }
 
     const onPickIcBack= (evt)=>{
       console.log(evt);
-      icback.value = evt.file;
+      icback.value = evt[0];
     }
 
     const onRejected= (evt)=>{
@@ -244,14 +262,45 @@ export default defineComponent({
 
     const uploadImages = () => {
       const newFormData = new FormData();
+      newFormData.append('id', memberId.value);
       newFormData.append('icfront', icfront.value);
       newFormData.append('icback', icback.value);
-      console.log(signaturePadRef.value.getSignatureImage());
+      const {isEmpty, data} = signaturePadRef.value.saveSignature();
+      if (!isEmpty) {
+        newFormData.append('signature', data);
+      }
       // newFormData.append('signature', signaturePadRef.value.getSignatureImage());
       for (const entry of newFormData){
         console.log(entry);
       }
-      console.form(newFormData);
+      const accessToken = localStorage.getItem('accessToken');
+      axios.defaults.headers.common['Authorization'] = accessToken;
+      axios.post("http://localhost:3030/upload",newFormData).then((response) => {
+        switch (response.status) {
+          case 201:
+            console.log(response.data);
+            router.push('/');
+            break;
+          case 200:
+            console.log(response.data);
+            router.push('/');
+            break;
+          case 400:
+            console.log(response.data);
+            break;
+          case 401:
+            console.log(response.data);
+            localStorage.removeItem('accessToken');
+            router.push('/login');
+            break;
+          default:
+            break;
+        }
+      }).catch((error) => {
+        console.log(error);
+        localStorage.removeItem('accessToken');
+        router.push('/login');
+      });
     }
 
     return {
@@ -272,6 +321,8 @@ export default defineComponent({
       // methods
       onPickIcfront,
       onPickIcBack,
+      undoSignature,
+      clearSignature,
       onRejected,
       addNewMember,
       uploadImages,
