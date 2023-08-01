@@ -1,3 +1,4 @@
+import { GeneralError } from '@feathersjs/errors'
 import multer from '@koa/multer'
 import Router from '@koa/router'
 import { diskStorage } from 'multer'
@@ -29,14 +30,10 @@ router.post('/upload', upload.fields([
 	}
 	try {
     const savedData = await uploadService.create(data, ctx.params);
-    ctx.body = { message: 'Upload successful!', data: savedData };
+    ctx.body = { savedData: savedData };
   } catch (error) {
-    console.error('Error saving data:', error);
-    ctx.status = 500;
-    ctx.body = { message: 'Upload failed!' };
+		throw new GeneralError('Error saving data:', error);
   }
-
-  // ctx.body = { message: 'Upload successful!'};
 })
 
 export const multerUpload = (app) => {
