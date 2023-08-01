@@ -349,6 +349,10 @@
         for (const entry of newFormData){
           console.log(entry);
         }
+        if (newFormData.get('icfront') == null && newFormData.get('icback') == null && newFormData.get('signature') == null){
+          console.log('no file to upload')
+          return;
+        }
         axios.patch("http://localhost:3030/upload",newFormData).then((response) => {
           switch (response.status) {
             case 201:
