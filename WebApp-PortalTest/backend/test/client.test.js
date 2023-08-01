@@ -4,9 +4,8 @@ import axios from 'axios'
 
 import rest from '@feathersjs/rest-client'
 import authenticationClient from '@feathersjs/authentication-client'
-import { app } from '../src/app'
-import { createClient } from '../src/client'
-import type { UserData } from '../src/client'
+import { app } from '../src/app.js'
+import { createClient } from '../src/client.js'
 
 const port = app.get('port')
 const appUrl = `http://${app.get('host')}:${port}`
@@ -27,18 +26,16 @@ describe('application client tests', () => {
   })
 
   it('creates and authenticates a user with email and password', async () => {
-    const userData: UserData = {
+    const userData = {
       email: 'someone@example.com',
       password: 'supersecret'
     }
 
     await client.service('users').create(userData)
-
     const { user, accessToken } = await client.authenticate({
       strategy: 'local',
       ...userData
     })
-
     assert.ok(accessToken, 'Created access token for user')
     assert.ok(user, 'Includes user in authentication data')
     assert.strictEqual(user.password, undefined, 'Password is hidden to clients')

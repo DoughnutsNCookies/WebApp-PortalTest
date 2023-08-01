@@ -9,11 +9,11 @@
     "default": 10,
     "max": 50
   },
-  "mongodb": "",
+  "mongodb": "mongodb://127.0.0.1:27017/backend",
   "authentication": {
     "entity": "user",
     "service": "users",
-    "secret": "rKCfAJMZNg1+6MDKSZFXL5S18nk6Rkju",
+    "secret": "9siXR3pdhLj/gd5ZxSwgJ43bXCtFmfLg",
     "authStrategies": [
       "jwt",
       "local"

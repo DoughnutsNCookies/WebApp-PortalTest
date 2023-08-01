@@ -3,15 +3,18 @@ import { feathers } from '@feathersjs/feathers'
 import configuration from '@feathersjs/configuration'
 import { koa, rest, bodyParser, errorHandler, parseAuthentication, cors, serveStatic } from '@feathersjs/koa'
 import socketio from '@feathersjs/socketio'
-import { configurationValidator } from './configuration'
-import type { Application } from './declarations'
-import { logError } from './hooks/log-error'
-import { mongodb } from './mongodb'
-import { authentication } from './authentication'
-import { services } from './services/index'
-import { channels } from './channels'
 
-const app: Application = koa(feathers())
+import { configurationValidator } from './configuration.js'
+import { logError } from './hooks/log-error.js'
+import { mongodb } from './mongodb.js'
+
+import { authentication } from './authentication.js'
+
+import { services } from './services/index.js'
+import { channels } from './channels.js'
+import { multerUpload } from './multer.js'
+
+const app = koa(feathers())
 
 // Load our app configuration (see config/ folder)
 app.configure(configuration(configurationValidator))
@@ -32,8 +35,12 @@ app.configure(
     }
   })
 )
+
+app.configure(multerUpload)
 app.configure(mongodb)
+
 app.configure(authentication)
+
 app.configure(services)
 app.configure(channels)
 

@@ -1,7 +1,7 @@
-const { Forbidden } = require('@feathersjs/errors')
+import { Forbidden } from '@feathersjs/errors'
 
-module.exports = () => {
-  return async (context: any) => {
+export const checkDuplicateEmail = () => {
+  return async (context) => {
     const { app, data } = context
     const { email } = data
 
