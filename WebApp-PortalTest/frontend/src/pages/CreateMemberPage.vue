@@ -212,7 +212,7 @@ export default defineComponent({
         switch (response.status) {
           case 201:
             console.log(response.data);
-            memberId.value = response.data.memberId;
+            memberId.value = response.data._id;
             stage.value = 1;
             break;
           case 200:
@@ -262,7 +262,7 @@ export default defineComponent({
 
     const uploadImages = () => {
       const newFormData = new FormData();
-      newFormData.append('id', memberId.value);
+      newFormData.append('formId', memberId.value);
       newFormData.append('icfront', icfront.value);
       newFormData.append('icback', icback.value);
       const {isEmpty, data} = signaturePadRef.value.saveSignature();
