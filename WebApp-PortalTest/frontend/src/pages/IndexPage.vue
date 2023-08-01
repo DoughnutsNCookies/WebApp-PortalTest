@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref,onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -42,6 +42,19 @@ export default defineComponent({
       console.log('createMember');
     }
 
+    const scrollEvent = () => {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+          axios.get('http://localhost:3030/form/?$limit=20&$skip=' + members.value.length)
+            .then((response) => {
+              console.log(response);
+              members.value = members.value.concat(response.data.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+        }
+    }
+
     onMounted(() => {
       const accessToken = localStorage.getItem('accessToken');
       axios.defaults.headers.common['Authorization'] = accessToken;
@@ -53,18 +66,13 @@ export default defineComponent({
         .catch((error) => {
           console.log(error);
         })
-      window.addEventListener('scroll', () => {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-          axios.get('http://localhost:3030/form/?$limit=20&$skip=' + members.value.length)
-            .then((response) => {
-              console.log(response);
-              members.value = members.value.concat(response.data.data);
-            })
-            .catch((error) => {
-              console.log(error);
-            })
-        }
-      })
+      setTimeout(() => {
+        window.addEventListener('scroll', scrollEvent)
+      }, 10);
+    })
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('scroll', scrollEvent)
     })
     return { createMember, members }
   }
