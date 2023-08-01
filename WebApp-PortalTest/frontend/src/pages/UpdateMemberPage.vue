@@ -176,15 +176,13 @@
       "Member",
       "Senior Member"
     ]
-      
-      onMounted(() => {
-        signaturePad.value.lockSignaturePad()
+      const getData = () => {
         const accessToken = localStorage.getItem('accessToken');
         axios.defaults.headers.common['Authorization'] = accessToken;
         axios.get('http://localhost:3030/form/'+ route.params.id)
           .then((response) => {
             console.log(response);
-             
+
             fullName.value = response.data.fullName;
             telephone.value = response.data.telephone;
             dateOfBirth.value = response.data.dateOfBirth;
@@ -206,6 +204,11 @@
           .catch((error) => {
             console.log(error);
           })
+      }
+      
+      onMounted(() => {
+        signaturePad.value.lockSignaturePad()
+        getData()
       }),
 
       watch(fab, (val) => {
@@ -220,6 +223,7 @@
         if (!fab.value && !submitting){ 
             console.log('reset all input')
             submitting = false
+            getData()
             return;
         }
         submitting = false
