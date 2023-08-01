@@ -100,13 +100,21 @@
                 :src="icfront"
                 spinner-color="white"
                 style="max-width: 400px;"
-              />
+              >
+                <div class="absolute-bottom text-subtitle1 text-center">
+                  IC front
+                </div>
+              </q-img>
               <q-img
                 v-if="!fab"
                 :src="icback"
                 spinner-color="white"
                 style="max-width: 400px;"
-              />
+              >
+                <div class="absolute-bottom text-subtitle1 text-center">
+                  IC back
+                </div>
+              </q-img>
               <q-img
                 v-if="!fab"
                 :src="signature"
