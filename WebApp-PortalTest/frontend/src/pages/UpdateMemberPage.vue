@@ -71,7 +71,7 @@
               type="text"
               :disable="!fab"
             />
-            <q-select outlined v-model="monthlyContribution" :options="contributionOptions" label="Outlined" :disable="!fab"/>
+            <q-select outlined v-model="monthlyContribution" :options="contributionOptions" label="Monthly Contribution" :disable="!fab"/>
             <q-input
               outlined
               v-model="share"
@@ -93,6 +93,7 @@
               type="text"
               :disable="!fab"
             />
+            <q-select outlined v-model="authorityLevel" :options="authorityOptions" label="Authority Level" :disable="!fab"/>
             <div class="column" style="display: grid; justify-content: center;gap: 18px;">
               <VueSignaturePad
               style="border: 1px solid black;"
@@ -167,6 +168,11 @@
         "RM 100",
         "others",
       ]
+      const authorityOptions=[
+      "Admin",
+      "Member",
+      "Senior Member"
+    ]
       
       onMounted(() => {
         signaturePad.value.lockSignaturePad()
@@ -201,6 +207,7 @@
         fabHide,
         fab,
         contributionOptions,
+        authorityOptions,
         updateMemberInfo,
         fullName,
         telephone,

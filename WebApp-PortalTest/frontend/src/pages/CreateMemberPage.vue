@@ -62,7 +62,7 @@
             label="Name of Company"
             type="text"
           />
-          <q-select outlined v-model="monthlyContribution" :options="contributionOptions" label="Outlined" />
+          <q-select outlined v-model="monthlyContribution" :options="contributionOptions" label="Monthly Contribution" />
           <q-input
             outlined
             v-model="share"
@@ -81,7 +81,7 @@
             label="Bank Name"
             type="text"
           />
-          <q-select outlined v-model="authorityLevel" :options="authorityOptions" label="Outlined" />
+          <q-select outlined v-model="authorityLevel" :options="authorityOptions" label="Authority Level" />
           
         </div>
         <q-btn type="submit" color="primary" class="q-mt-md" label="Add"/>
