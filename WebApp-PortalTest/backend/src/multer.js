@@ -9,6 +9,7 @@ const upload = multer({
   storage: diskStorage({
     destination: './uploads',
     filename: (req, file, cb) => {
+      console.log(file)
       cb(null, file.originalname)
     }
   })
@@ -23,21 +24,21 @@ router.post(
     { name: 'formId', maxCount: 1 }
   ]),
   async (ctx) => {
-    const { id, signature } = ctx.request.body
+    const { formId, signature } = ctx.request.body
     for (const fileObj in ctx.request.files) {
       const file = ctx.request.files[fileObj][0]
       fs.rename(
         './uploads/' + file.originalname,
-        './uploads/' + id + '-' + file.fieldname + '.png',
+        './uploads/' + formId + '-' + file.fieldname + '.png',
         (err) => {}
       )
     }
 
     const uploadService = ctx.app.service('signature')
     const data = {
-      formId: id,
-      icfront: id + '-icfront.png',
-      icback: id + '-icback.png',
+      formId: formId,
+      icfront: formId + '-icfront.png',
+      icback: formId + '-icback.png',
       signature: signature
     }
     try {
