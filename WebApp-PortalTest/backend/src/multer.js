@@ -33,7 +33,7 @@ router.post(
       )
     }
 
-    const uploadService = ctx.app.service('signature')
+    const signatureService = ctx.app.service('signature')
     const data = {
       formId: id,
       icfront: id + '-icfront.png',
@@ -41,7 +41,7 @@ router.post(
       signature: signature
     }
     try {
-      const savedData = await uploadService.create(data, ctx.params)
+      const savedData = await signatureService.create(data, ctx.params)
       ctx.body = { savedData: savedData }
     } catch (error) {
       throw new GeneralError('Error saving data:', error)

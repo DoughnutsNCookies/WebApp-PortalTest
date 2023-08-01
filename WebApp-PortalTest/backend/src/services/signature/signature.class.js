@@ -1,11 +1,7 @@
 import { MongoDBService } from '@feathersjs/mongodb'
 
 // By default calls the standard MongoDB adapter service methods but can be customized with your own functionality.
-export class SignatureService extends MongoDBService {
-  async create(data, params) {
-    return super.create(data, params);
-  }
-}
+export class SignatureService extends MongoDBService {}
 
 export const getOptions = (app) => {
   return {
