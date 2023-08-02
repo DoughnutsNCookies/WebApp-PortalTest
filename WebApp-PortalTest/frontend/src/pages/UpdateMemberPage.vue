@@ -94,7 +94,55 @@
               :disable="!fab"
             />
             <q-select outlined v-model="authorityLevel" :options="authorityOptions" label="Authority Level" :disable="!fab"/>
-            <div class="column" style="display: grid; justify-content: center;gap: 18px;">
+            <div class="column items-center" style="gap: 18px; ">
+              <q-img
+                v-if="!fab"
+                :src="icfront"
+                spinner-color="white"
+                style="max-width: 400px;"
+              >
+                <div class="absolute-bottom text-subtitle1 text-center">
+                  IC front
+                </div>
+              </q-img>
+              <q-img
+                v-if="!fab"
+                :src="icback"
+                spinner-color="white"
+                style="max-width: 400px;"
+              >
+                <div class="absolute-bottom text-subtitle1 text-center">
+                  IC back
+                </div>
+              </q-img>
+              <q-img
+                v-if="!fab"
+                :src="signature"
+                spinner-color="white"
+                style="max-width: 400px; margin-bottom: 50px;"
+              />
+              <q-uploader
+                v-if="fab"
+                style="max-width: 300px"
+                label="Ic Front"
+                multiple="false"
+                max-files="1"
+                hide-upload-btn
+                accept=".jpg,.png, image/*"
+                @added="onPickIcfront"
+                @rejected="onRejected"
+              />
+              <q-uploader
+                v-if="fab"  
+                style="max-width: 300px"
+                label="Ic Back"
+                multiple="false"
+                max-files="1"
+                hide-upload-btn
+                accept=".jpg,.png, image/*"
+                @added="onPickIcBack"
+                @rejected="onRejected"
+              />
               <VueSignaturePad
               style="border: 1px solid black;"
               ref="signaturePad"
@@ -102,16 +150,11 @@
               class="signature-pad"
               width="300px"
               height="200px"
+              :style="!fab?'opacity: 0;':'opacity: 1;'"
               :disable="!fab"
               :options="{
                 penColor: 'rgb(0, 0, 0)',
               }"
-              />
-              <q-input
-                outlined
-                v-model="date"
-                label="Date"
-                type="date"
               />
             </div>
           </div>
@@ -162,7 +205,6 @@
       const share = ref(0);
       const bankAccountNumber = ref('');
       const bankName = ref('');
-      const signature = ref(null);
       const date = ref('');
       const authorityLevel = ref('');
       const contributionOptions=[
@@ -172,10 +214,17 @@
         "others",
       ]
       const authorityOptions=[
-      "Admin",
-      "Member",
-      "Senior Member"
-    ]
+        "Admin",
+        "Member",
+        "Senior Member"
+      ]
+      // files 
+      const icfront = ref(null);
+      const updateIcfront = ref(null);
+      const icback = ref(null);
+      const updateIcback = ref(null);
+      const signature = ref(null);
+      
       const getData = () => {
         const accessToken = localStorage.getItem('accessToken');
         axios.defaults.headers.common['Authorization'] = accessToken;
@@ -200,6 +249,16 @@
             signature.value = response.data.signature
             date.value = response.data.date
             authorityLevel.value = response.data.authorityLevel
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+        axios.get('http://localhost:3030/signature/'+ route.params.id)
+          .then((response) => {
+            console.log(response);
+            icfront.value = response.data.icFront
+            icback.value = response.data.icBack
+            signature.value = response.data.signature
           })
           .catch((error) => {
             console.log(error);
@@ -229,6 +288,20 @@
         submitting = false
       }
 
+      const onPickIcfront= (evt)=>{
+        console.log(evt);
+        updateIcfront.value = evt[0];
+      }
+
+      const onPickIcBack= (evt)=>{
+        console.log(evt);
+        updateIcback.value = evt[0];
+      }
+
+      const onRejected= (evt)=>{
+
+      }
+      
       const addNewMember = async ()=>{
         const accessToken = localStorage.getItem('accessToken');
         axios.defaults.headers.common['Authorization'] = accessToken;
@@ -261,11 +334,59 @@
         } catch (error) {
           console.log(error)
         }
+        const newFormData = new FormData();
+        newFormData.append('formId', route.params.id);
+        if (updateIcfront.value)
+          newFormData.append('icfront', updateIcfront.value);
+        if (updateIcback.value)
+          newFormData.append('icback', updateIcback.value);
+        const {isEmpty, data} = signaturePad.value.saveSignature();
+        if (!isEmpty) {
+          console.log('signature is not empty');
+          newFormData.append('signature', data);
+        }
+        // newFormData.append('signature', signaturePadRef.value.getSignatureImage());
+        for (const entry of newFormData){
+          console.log(entry);
+        }
+        if (newFormData.get('icfront') == null && newFormData.get('icback') == null && newFormData.get('signature') == null){
+          console.log('no file to upload')
+          return;
+        }
+        const accessToken = localStorage.getItem('accessToken');
+        axios.defaults.headers.common['Authorization'] = accessToken;
+        axios.patch("http://localhost:3030/upload",newFormData).then((response) => {
+          switch (response.status) {
+            case 201:
+              console.log(response.data);
+              router.push('/');
+              break;
+            case 200:
+              console.log(response.data);
+              router.push('/');
+              break;
+            case 400:
+              console.log(response.data);
+              break;
+            case 401:
+              console.log(response.data);
+              localStorage.removeItem('accessToken');
+              router.push('/login');
+              break;
+            default:
+              break;
+          }
+        }).catch((error) => {
+          console.log(error);
+        });
       }
   
       return {
         signaturePad,
 
+        onPickIcBack,
+        onPickIcfront,
+        onRejected,
         fabHide,
         fab,
         contributionOptions,
@@ -288,6 +409,8 @@
         signature,
         date,
         authorityLevel,
+        icback,
+        icfront,
       }
     }
   })
